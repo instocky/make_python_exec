@@ -29,7 +29,7 @@ SAFE_GLOBALS = {
     'enumerate': enumerate,
     'zip': zip,
     '__getattr__': safer_getattr,
-    '_getitem_': _getitem_,  # наша собственная функция
+    '_getitem_': _getitem_,
     '_getiter_': lambda x: iter(x),
     '_iter_unpack_sequence_': lambda x, y: list(x)[:y],
 }
