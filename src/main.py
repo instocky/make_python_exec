@@ -3,33 +3,40 @@ from fastapi import FastAPI, HTTPException, Security, Depends
 from fastapi.security import APIKeyHeader
 from pydantic import BaseModel
 from typing import Dict, Any
-import os
-from dotenv import load_dotenv
+import json
 from pathlib import Path
 from .executor import execute_code
 
-# Загружаем переменные окружения из .env файла
-env_path = Path(__file__).parent / '.env'
-load_dotenv(dotenv_path=env_path)
+# Путь к файлу с API ключами
+API_KEYS_FILE = Path(__file__).parent / 'api_keys.json'
 
-# Получаем API ключ из переменных окружения
-API_KEY = os.getenv("API_KEY")
-if not API_KEY:
-    raise RuntimeError("API_KEY environment variable is not set")
+# Загрузка API ключей
+def load_api_keys():
+    if not API_KEYS_FILE.exists():
+        with open(API_KEYS_FILE, 'w') as f:
+            json.dump({}, f, indent=4)
+        return {}
+    
+    with open(API_KEYS_FILE) as f:
+        return json.load(f)
+
+API_KEYS = load_api_keys()
 
 app = FastAPI(title="Python Code Executor API")
 
-# Создаем схему безопасности для API ключа
 api_key_header = APIKeyHeader(name="X-API-Key")
 
 async def verify_api_key(api_key: str = Security(api_key_header)):
-    """Проверка API ключа"""
-    if api_key != API_KEY:
+    """Проверка API ключа и получение информации о клиенте"""
+    if api_key not in API_KEYS:
         raise HTTPException(
             status_code=401,
             detail="Invalid API Key"
         )
-    return api_key
+    return {
+        'key': api_key,
+        'client_info': API_KEYS[api_key]
+    }
 
 class CodeExecutionRequest(BaseModel):
     code: str
@@ -38,8 +45,11 @@ class CodeExecutionRequest(BaseModel):
 @app.post("/execute")
 async def execute(
     request: CodeExecutionRequest,
-    api_key: str = Depends(verify_api_key)
+    auth_info: dict = Depends(verify_api_key)
 ):
+    client_name = auth_info['client_info'].get('name', 'Unknown Client')
+    print(f"Executing code for client: {client_name}")
+    
     result = execute_code(request.code, request.data)
     
     if not result['success']:

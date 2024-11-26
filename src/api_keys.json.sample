@@ -1,0 +1,14 @@
+{
+    "sk_test_sample123": {
+        "name": "Sample Test Client",
+        "description": "Example test client configuration",
+        "created": "2024-01-26",
+        "rate_limit": 100
+    },
+    "sk_prod_sample456": {
+        "name": "Sample Production Client",
+        "description": "Example production client configuration",
+        "created": "2024-01-26",
+        "rate_limit": 1000
+    }
+}
