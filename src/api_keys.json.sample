@@ -3,12 +3,16 @@
         "name": "Sample Test Client",
         "description": "Example test client configuration",
         "created": "2024-01-26",
-        "rate_limit": 100
+        "rate_limit": 100,
+        "executions_limit": 1000,
+        "executions_left": 1000
     },
     "sk_prod_sample456": {
         "name": "Sample Production Client",
         "description": "Example production client configuration",
         "created": "2024-01-26",
-        "rate_limit": 1000
+        "rate_limit": 1000,
+        "executions_limit": 10000,
+        "executions_left": 10000
     }
 }

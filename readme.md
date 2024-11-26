@@ -10,6 +10,8 @@ Simple REST API service that executes Python code in a restricted environment. V
 - JSON input/output
 - API key authentication with client management
 - Support for multiple clients with different environments (test/prod)
+- Execution limits tracking for each API key
+- CLI tool for API key and execution limits management
 
 ## Installation
 
@@ -24,7 +26,8 @@ pip install -r requirements.txt
 
 # Set up API keys
 cp src/api_keys.json.sample src/api_keys.json
-python src/manage_keys.py add --name "Test Client" --description "For testing" --env test
+python src/manage_keys.py add --name "Test Client" --description "For testing" \
+    --env test --executions-limit 1000
 ```
 
 ## Project Structure
@@ -44,18 +47,32 @@ python-executor/
 
 ## API Key Management
 
-The service uses API key authentication. Keys can be managed using the CLI tool:
+The service uses API key authentication with execution limits. Keys can be managed using the CLI tool:
 
 ```bash
 # Add a new key
-python src/manage_keys.py add --name "Client Name" --description "Description" --env prod
+python src/manage_keys.py add --name "Client Name" --description "Description" \
+    --env prod --executions-limit 1000
 
-# List all keys
+# List all keys and their limits
 python src/manage_keys.py list
+
+# Reset executions counter for a key
+python src/manage_keys.py reset-executions sk_prod_xyz789
+
+# Update executions limit
+python src/manage_keys.py update-limit sk_prod_xyz789 2000
 
 # Revoke a key
 python src/manage_keys.py revoke sk_prod_xyz789
 ```
+
+Each API key has:
+- Rate limit per minute
+- Total executions limit
+- Counter of remaining executions
+- Environment type (test/prod)
+- Client metadata (name, description)
 
 Note: The `api_keys.json` file contains sensitive information and should never be committed to the repository.
 
@@ -95,7 +112,15 @@ Content-Type: application/json
 ```json
 {
     "success": true,
-    "result": 3.0
+    "result": 3.0,
+    "executions_left": 999
+}
+```
+
+**Error Response (Limit Exceeded):**
+```json
+{
+    "detail": "API executions limit exceeded"
 }
 ```
 
@@ -124,7 +149,9 @@ The following Python built-in functions are available in the restricted environm
 - No module imports
 - Limited to basic Python operations
 - API key authentication
-- Client-specific rate limits and monitoring
+- Client-specific rate limits
+- Execution limits per API key
+- Environment separation (test/prod)
 
 ## Requirements
 
@@ -142,6 +169,8 @@ The following Python built-in functions are available in the restricted environm
 - JSON API
 - API key authentication system
 - Multiple client support with metadata
+- Execution limits tracking
+- CLI tool for key management
 
 ## License
 
