@@ -172,6 +172,13 @@ The following Python built-in functions are available in the restricted environm
 - Execution limits tracking
 - CLI tool for key management
 
+## TODO
+- [ ] Автоматическое пополнение лимитов по расписанию
+- [ ] История использования API
+- [ ] Метрики использования
+- [ ] Поддержка разных типов лимитов (дневные, месячные)
+- [ ] Webhook уведомления при достижении порога исчерпания лимита
+
 ## License
 
 MIT

@@ -41,3 +41,6 @@ src/api_keys.json
 
 # Logs
 *.log
+
+# Users
+notes.md
