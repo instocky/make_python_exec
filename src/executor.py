@@ -2,10 +2,16 @@
 from RestrictedPython import compile_restricted, safe_globals
 from RestrictedPython.Guards import safer_getattr
 from typing import Dict, Any
+import requests  # Добавляем импорт
+import time     # Добавляем импорт
 
 def _getitem_(obj, key):
     """Безопасный доступ к элементам"""
     return obj[key]
+
+def _getattr_(obj, name):
+    """Безопасный доступ к атрибутам"""
+    return getattr(obj, name)
 
 SAFE_GLOBALS = {
     'abs': abs,
@@ -32,6 +38,9 @@ SAFE_GLOBALS = {
     '_getitem_': _getitem_,
     '_getiter_': lambda x: iter(x),
     '_iter_unpack_sequence_': lambda x, y: list(x)[:y],
+    '_getattr_': _getattr_,  # Добавили guard для атрибутов
+    'requests': requests,  # Добавляем requests
+    'time': time,         # Добавляем time
 }
 
 def execute_code(code: str, input_data: Dict[str, Any]) -> Dict[str, Any]:

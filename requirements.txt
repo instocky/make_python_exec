@@ -3,3 +3,4 @@ fastapi==0.109.2
 uvicorn==0.27.1
 RestrictedPython==7.0
 pydantic==2.6.1
+requests==2.31.0
